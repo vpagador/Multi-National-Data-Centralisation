@@ -1,13 +1,13 @@
 from database_utils import DatabaseConnector
 import pandas as pd
 from sqlalchemy import inspect
+import tabula
 
 class DataExtractor:
     
-    def __init__(self):
-        connector = DatabaseConnector()
-        connector.read_db_creds('db_creds.yaml')
-        self.run_engine = connector.init_db_engine()
+    def __init__(self, db_connector):
+        creds = db_connector.read_db_creds('db_creds.yaml')
+        self.run_engine = db_connector.init_db_engine(creds)
 
     def list_db_tables(self):
         inspector = inspect(self.run_engine)
@@ -18,14 +18,14 @@ class DataExtractor:
         df = pd.read_sql_table(table,self.run_engine)
         return df
 
-    def print_all_tables(self, table_names):
-        for table in table_names:  
-            df = pd.read_sql_table(table, self.run_engine)
-            print(df.head(5))
+    def retrieve_pdf_data(self,link):
+        df = tabula.read_pdf(link,pages='all')
+        return df
         
 
 if __name__ == '__main__':
-    data_extractor = DataExtractor()
+    db_connector = DatabaseConnector()
+    data_extractor = DataExtractor(db_connector)
     table_list = data_extractor.list_db_tables()
     user_table = table_list[1]
     df = data_extractor.read_rds_table(user_table)
