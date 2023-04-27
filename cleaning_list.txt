@@ -1,3 +1,0 @@
-- Dates in incorrect format (correct: YYYY/MM/DD) --> date of birth and join date       /
-- /n where there needs to be a space in address column                                  /
-- Eliminate rows with NULL values                                                       /
