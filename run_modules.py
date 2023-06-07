@@ -4,7 +4,7 @@ from python_scripts.data_cleaning import DataCleaning
 import pandas as pd
 
 db_connector = DatabaseConnector()
-data_extractor = DataExtractor(db_connector)
+data_extractor = DataExtractor()
 data_cleaner = DataCleaning()
 
 # load user data

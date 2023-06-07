@@ -7,14 +7,11 @@ import json
 import boto3
 
 class DataExtractor:
-    
-    def __init__(self, db_connector = None):
-        if db_connector is not None:
-            creds = db_connector.read_db_creds('db_creds.yaml')
-            self.run_engine = db_connector.init_db_engine(creds)
 
     def list_db_tables(self):
-        inspector = inspect(self.run_engine)
+        creds = db_connector.read_db_creds('db_creds.yaml')
+        run_engine = db_connector.init_db_engine(creds)
+        inspector = inspect(run_engine)
         table_list = inspector.get_table_names()
         return table_list
     
