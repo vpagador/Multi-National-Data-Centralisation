@@ -1,0 +1,9 @@
+*.csv
+*.txt
+*ipynb
+*.yaml
+__pycache__
+test.py
+experiments/
+output_data
+

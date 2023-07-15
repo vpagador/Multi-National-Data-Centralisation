@@ -1,5 +1,5 @@
-from data_extraction import DataExtractor
-from database_utils import DatabaseConnector
+from python_scripts.data_extraction import DataExtractor
+from python_scripts.database_utils import DatabaseConnector
 import pandas as pd
 import re
 

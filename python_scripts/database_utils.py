@@ -1,5 +1,6 @@
 import yaml
 from yaml.loader import SafeLoader
+import psycopg2
 from sqlalchemy import create_engine    
 
 
@@ -14,6 +15,7 @@ class DatabaseConnector:
 
     def init_db_engine(self, format_creds):
         engine = create_engine(format_creds)
+        print(engine.connect())
         return engine.connect()
     
     def upload_to_db(self, df, table_name, my_db_creds ='my_db_creds.yaml'):
@@ -24,7 +26,7 @@ class DatabaseConnector:
 
 
 if __name__ == '__main__':
-    connect = DatabaseConnector()
-    creds = connect.read_db_creds('db_creds.yaml')
-    connect.init_db_engine(creds)
+    database_connector = DatabaseConnector()
+    creds_to_read = database_connector.read_db_creds('python_scripts/db_creds.yaml')
+    database_connector.init_db_engine(creds_to_read)
     
