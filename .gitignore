@@ -1,9 +1,11 @@
+experiments/
+output_data/
+__pycache__/
 *.csv
 *.txt
-*ipynb
+*.ipynb
 *.yaml
-__pycache__
 test.py
-experiments/
-output_data
+run_this.py
+
 
