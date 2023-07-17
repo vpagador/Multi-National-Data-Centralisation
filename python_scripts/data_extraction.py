@@ -25,7 +25,7 @@ class DataExtractor:
             print(f'Failed to read data')
             print(f'{err.__class__.__name__}: {err}')
             return pd.DataFrame()
-
+    
     def retrieve_pdf_data(self,link):
         credit_card_df = tabula.read_pdf(link,pages='all')
         credit_card_df = pd.concat(credit_card_df)
