@@ -1,11 +1,11 @@
 experiments/
 output_data/
+creds/
 __pycache__/
 *.csv
 *.txt
 *.ipynb
 *.yaml
-test.py
-run_this.py
+
 
 
