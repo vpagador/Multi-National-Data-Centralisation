@@ -72,6 +72,9 @@ SET weight_class =
 --Task 5: Update the dim_products with the required data types
 
 ALTER TABLE dim_products
+	RENAME COLUMN removed TO still_available;
+
+ALTER TABLE dim_products
 ALTER COLUMN product_price TYPE FLOAT USING product_price::DOUBLE PRECISION,
 ALTER COLUMN weight TYPE FLOAT USING weight::DOUBLE PRECISION, 
 ALTER COLUMN category TYPE VARCHAR(18),
@@ -100,15 +103,15 @@ ALTER COLUMN date_payment_confirmed TYPE DATE
 --Task 8: Set a PRIMARY KEY in the dimension tables
 
 ALTER TABLE dim_card_details 
-ADD PRIMARY KEY (card_number)
+ADD PRIMARY KEY (card_number);
 ALTER TABLE dim_date_times
-ADD PRIMARY KEY (date_uuid)
+ADD PRIMARY KEY (date_uuid);
 ALTER TABLE dim_products
-ADD PRIMARY KEY (product_code)
+ADD PRIMARY KEY (product_code);
 ALTER TABLE dim_store_details
-ADD PRIMARY KEY (store_code)
+ADD PRIMARY KEY (store_code);
 ALTER TABLE dim_users
-ADD PRIMARY KEY (user_uuid)
+ADD PRIMARY KEY (user_uuid);
 
 --Task 9: Finalise the star-based schema and add foreign keys to the orders table
 
