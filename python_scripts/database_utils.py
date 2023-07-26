@@ -18,7 +18,7 @@ class DatabaseConnector:
         print(engine.connect())
         return engine.connect()
     
-    def upload_to_db(self, df, table_name, my_db_creds ='my_db_creds.yaml'):
+    def upload_to_db(self, df, table_name, my_db_creds='creds/my_db_creds.yaml'):
         my_creds = self.read_db_creds(my_db_creds)
         engine = self.init_db_engine(my_creds)
         df.to_sql(table_name, engine, if_exists = 'replace')

@@ -41,9 +41,10 @@ clean_stores_df.to_csv("clean_stores_data.csv")
 db_connector.upload_to_db(clean_stores_df,table_name='dim_store_details')
 
 # load products data
-products_df = data_extractor.extract_from_s3()
-products_df.to_csv("notclean_products_data.csv")
+data_extractor.extract_from_s3('s3://data-handling-public/products.csv',
+                               filename = 'notclean_products.csv')
 # clean weights column and products data
+products_df = pd.read_csv('notclean_products.csv')
 clean_weights_df = data_cleaner.convert_product_weights(products_df)
 clean_products_df = data_cleaner.clean_products_data(clean_weights_df)
 clean_products_df.to_csv("clean_products_data.csv")
@@ -61,7 +62,7 @@ clean_orders_df.to_csv('clean_orders_data.csv')
 db_connector.upload_to_db(clean_orders_df,table_name='orders_table')
 
 # load events data
-events_df = data_extractor.extract_from_s3(address='https://data-handling-public.s3.eu-west-1.amazonaws.com/date_details.json',
+events_df = data_extractor.extract_from_s3(s3_address='https://data-handling-public.s3.eu-west-1.amazonaws.com/date_details.json',
                                    filename='date_events.json')
 events_df.to_csv('notclean_events_data.csv')
 # clean events data

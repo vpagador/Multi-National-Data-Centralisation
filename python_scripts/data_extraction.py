@@ -50,33 +50,29 @@ class DataExtractor:
         stores_df = pd.concat(list_of_stores)
         return stores_df
     
-    def extract_from_s3(self,address ='s3://data-handling-public/products.csv',filename='products.csv'):
-        def format_s3_address():
+    def _format_s3_address(self,BUCKET_NAME,OBJECT_NAME,filename):
             s3 = boto3.client(service_name ='s3')
             s3.download_file(BUCKET_NAME,OBJECT_NAME,filename)
         
-        def read_file_type():
-            if filename[-3:] == 'csv':
-                df = pd.read_csv(filename)
-            elif filename[-4:] == 'json':
-                df = pd.read_json(filename)
-            return df
+    def _read_file_type(self,filename):
+        if filename[-3:] == 'csv':
+            df = pd.read_csv(filename)
+        elif filename[-4:] == 'json':
+            df = pd.read_json(filename)
+        return df
+
+    def extract_from_s3(self, s3_address, filename):
         try:
-            BUCKET_NAME, OBJECT_NAME = address.split('/')[-2], address.split('/')[-1]
-            format_s3_address()
-            df = read_file_type()
-            return df
+            BUCKET_NAME, OBJECT_NAME = s3_address.split('/')[-2], s3_address.split('/')[-1]
         except:
             pass
         try:
-            BUCKET_NAME, OBJECT_NAME = address.split('.s3')[-2].split('/')[2], address.split('/')[-1]
-            format_s3_address()
-            df = read_file_type()
-            return df
+            BUCKET_NAME, OBJECT_NAME = s3_address.split('.s3')[-2].split('/')[2], s3_address.split('/')[-1]
         except:
             pass
-        
-    
+        self._format_s3_address(BUCKET_NAME,OBJECT_NAME,filename)
+        df = self._read_file_type(filename)
+        return df
 
 if __name__ == '__main__':
     database_connector = DatabaseConnector()
