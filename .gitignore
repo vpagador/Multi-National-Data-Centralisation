@@ -3,7 +3,6 @@ output_data/
 creds/
 __pycache__/
 *.csv
-*.txt
 *.ipynb
 *.yaml
 
