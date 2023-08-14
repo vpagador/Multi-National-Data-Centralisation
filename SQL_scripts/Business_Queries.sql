@@ -157,11 +157,15 @@ GROUP BY year
 ORDER BY avg_times DESC)
 
 SELECT year,
+-- concat('hours: ', cast(round(avg(EXTRACT(HOUR FROM avg_times))) as text),
+-- 	   ', minutes: ', cast(round(avg(EXTRACT(MINUTE FROM avg_times))) as text),
+-- 	   ', seconds: ', cast(round(avg(EXTRACT(SECOND FROM avg_times))) as text))
+-- 	   as actual_time_taken
 
 	CONCAT('"Hours": ', (EXTRACT(HOUR FROM avg_times)),','
 	' "minutes" :', (EXTRACT(MINUTE FROM avg_times)),','
     ' "seconds" :', ROUND(EXTRACT(SECOND FROM avg_times)),','
-     ' "milliseconds" :', EXTRACT( MILLISECOND FROM avg_times)- FLOOR(EXTRACT(MILLISECOND FROM avg_times)))
+     ' "milliseconds" :', ROUND((EXTRACT( SECOND FROM avg_times)- FLOOR(EXTRACT(SECOND FROM avg_times)))*100))
 	
    as actual_time_taken
 
