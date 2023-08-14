@@ -126,78 +126,47 @@ SELECT
 
 --Task 9: How quickly is the company making sales?
 
-WITH cte AS(
-    SELECT 
-        CAST(CONCAT(year, '-', month, '-', day, ' ', timestamp) AS TIMESTAMP) as datetimes, year 
-        FROM 
-            dim_date_times
-    ORDER BY 
-        datetimes DESC), 
-        cte2 AS
-        (SELECT 
-        year, 
-        datetimes, 
-        LEAD(datetimes, 1) OVER (ORDER BY datetimes DESC) AS time_difference 
-        FROM cte) 
-    SELECT year, AVG((datetimes - time_difference)) AS actual_time_taken 
-    FROM cte2
-GROUP BY 
-        year
-ORDER BY 
-        actual_time_taken DESC
-SELECT * 
-    FROM 
-        dim_date_details  
-SELECT * 
-    FROM 
-        orders_table
-INNER JOIN 
-    dim_products ON dim_products.product_code = orders_table.product_code
-SELECT 
-    *, ts.sales * 100 /sum(sales)
-FROM 
-    (SELECT 
-        dim_store.store_type,
-           SUM(products.product_price * orders_table.product_quantity) AS sales
-           FROM 
-            orders_table AS orders_table
-           INNER JOIN 
-            dim_store_details ON orders_table.store_code = dim_store_details.store_code
-           INNER JOIN 
-            dim_products ON orders_table.product_code = dim_products.product_code
-           GROUP BY 
-            store_type
-) as ts.sales
+WITH date_times AS (
+SELECT
+year,
+month,
+day,
+timestamp,
+TO_TIMESTAMP(CONCAT(year, '/', month, '/', day, '/', timestamp), 'YYYY/MM/DD/HH24:MI:ss') as times
 
-SELECT 
-    ts.store_type, sum(ts.ts_sales) 
-    FROM (
-        SELECT 
-            dim_store_details.store_type,
-        SUM(dim_products.product_price * orders_table.product_quantity) AS ts_sales
-        FROM 
-            orders_table
-        INNER JOIN  
-        dim_store_details ON orders_table.store_code = dim_store.store_code
-        INNER JOIN 
-            dim_products ON orders_table.product_code = dim_products.product_code
-        GROUP BY 
-            dim_store_details.store_type
-        ) AS ts
+			   FROM dim_date_times d
+					 JOIN orders_table o
+					 ON d.date_uuid = o.date_uuid
+					 JOIN dim_store_details s
+					 ON o.store_code = s.store_code
+			   ORDER BY times DESC),		   	
 
-with cte as 
-    (SELECT 
-        dim_store_details.store_type, 
-        SUM(dim_products.product_price * orders_table.product_quantity) AS sales
-        FROM 
-            orders_table AS orders_table
-        INNER JOIN 
-            dim_store_details ON orders_table.store_code = dim_store_details.store_code
-        INNER JOIN 
-            dim_products ON orders_table.product_code = dim_products.product_code
-        GROUP BY 
-            dim_store_details.store_type)
-        SELECT 
-            cte.store_type, cte.sales / (SELECT sum(cte.sales) FROM cte)
-        FROM 
-            cte
+
+next_times AS(
+SELECT year,
+timestamp,
+times,
+LEAD(times) OVER(ORDER BY times DESC) AS next_times
+FROM date_times),
+
+avg_times AS(
+SELECT year,
+(AVG(times - next_times)) AS avg_times
+FROM next_times
+GROUP BY year
+ORDER BY avg_times DESC)
+
+SELECT year,
+
+	CONCAT('"Hours": ', (EXTRACT(HOUR FROM avg_times)),','
+	' "minutes" :', (EXTRACT(MINUTE FROM avg_times)),','
+    ' "seconds" :', ROUND(EXTRACT(SECOND FROM avg_times)),','
+     ' "milliseconds" :', EXTRACT( MILLISECOND FROM avg_times)- FLOOR(EXTRACT(MILLISECOND FROM avg_times)))
+	
+   as actual_time_taken
+
+
+FROM avg_times
+GROUP BY year, avg_times
+ORDER BY avg_times DESC
+LIMIT 5;
