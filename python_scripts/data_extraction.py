@@ -51,8 +51,8 @@ class DataExtractor:
         return stores_df
     
     def _format_s3_address(self,BUCKET_NAME,OBJECT_NAME,filename):
-            s3 = boto3.client(service_name ='s3')
-            s3.download_file(BUCKET_NAME,OBJECT_NAME,filename)
+        s3 = boto3.client(service_name ='s3')
+        s3.download_file(BUCKET_NAME,OBJECT_NAME,filename)
         
     def _read_file_type(self,filename):
         if filename[-3:] == 'csv':
