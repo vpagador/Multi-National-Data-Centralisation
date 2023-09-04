@@ -10,7 +10,7 @@ data_cleaner = DataCleaning()
 creds_to_read = db_connector.read_db_creds('creds/db_creds.yaml')
 engine = db_connector.init_db_engine(creds_to_read)
 
-'''# load user data
+# load user data
 table_list = data_extractor.list_db_tables(engine)
 table = table_list[1]
 user_df = data_extractor.read_rds_table(engine,table)
@@ -38,7 +38,7 @@ stores_df.to_csv("notclean_stores_data.csv")
 clean_stores_df = data_cleaner.clean_store_data(stores_df)
 clean_stores_df.to_csv("clean_stores_data.csv")
 # Send to db
-db_connector.upload_to_db(clean_stores_df,table_name='dim_store_details')'''
+db_connector.upload_to_db(clean_stores_df,table_name='dim_store_details')
 
 # load products data
 data_extractor.extract_from_s3('s3://data-handling-public/products.csv',
@@ -51,7 +51,7 @@ clean_products_df.to_csv("clean_products_data.csv")
 # send to db
 db_connector.upload_to_db(clean_products_df,table_name='dim_products')
 
-'''# load orders data
+# load orders data
 list_ = data_extractor.list_db_tables(engine)
 orders_df = data_extractor.read_rds_table(engine,list_[2])
 orders_df.to_csv('notclean_orders_data.csv')
@@ -69,4 +69,4 @@ events_df.to_csv('notclean_events_data.csv')
 clean_events_df = data_cleaner.clean_events_data(events_df)
 clean_events_df.to_csv('clean_events_data.csv')
 # send to db
-db_connector.upload_to_db(clean_events_df,table_name='dim_date_times')'''
+db_connector.upload_to_db(clean_events_df,table_name='dim_date_times')
