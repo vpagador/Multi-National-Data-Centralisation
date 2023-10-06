@@ -1,6 +1,6 @@
 # Multi-National-Data-Centralisation
 
-1. [Introduction](#introduction)
+1. [Introduction](#Introduction)
 2. [Setting up the environment](Settinguptheenvironment)
 3. [Extracting and cleaning the data from the data sources](Extractingandcleaningthedatafromthedatasources)
 
