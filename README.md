@@ -1,8 +1,8 @@
 # Multi-National-Data-Centralisation
 
 1. [Introduction](#Introduction)
-2. [Setting up the environment](section1)
-3. [Extracting and cleaning the data from the data sources](section2)
+2. [Setting up the environment](#section1)
+3. [Extracting and cleaning the data from the data sources](#section2)
 
 ## Introduction
 
