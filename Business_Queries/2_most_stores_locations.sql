@@ -1,4 +1,4 @@
---Which locations currently have the most stores?
+--2: Which locations currently have the most stores?
 
 SELECT 
     locality, COUNT(locality) 

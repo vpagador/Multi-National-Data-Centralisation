@@ -1,4 +1,4 @@
---How Many Stores does the business have in which countries?
+--1: How Many Stores does the business have in which countries?
 
 SELECT 
 	country_code,COUNT(country_code) 
