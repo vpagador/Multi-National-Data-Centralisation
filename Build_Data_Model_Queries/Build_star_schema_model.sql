@@ -1,6 +1,6 @@
---MRDC Milestone 3
+-- All processes to build data model
 
---Task 1: Cast types to orders_table
+--1: Cast types to orders_table
 
 ALTER TABLE orders_table 
 ALTER COLUMN product_quantity TYPE SMALLINT,
@@ -10,7 +10,7 @@ ALTER COLUMN card_number TYPE VARCHAR(19),
 ALTER COLUMN store_code TYPE VARCHAR(12),
 ALTER COLUMN product_code TYPE VARCHAR(11);
 
---Task 2: Cast types to dim_users
+--2: Cast types to dim_users
 
 ALTER TABLE dim_users
 ALTER COLUMN first_name TYPE VARCHAR(225),
@@ -20,7 +20,7 @@ ALTER COLUMN country_code TYPE VARCHAR(2),
 ALTER COLUMN user_uuid TYPE UUID USING user_uuid::UUID,
 ALTER COLUMN  join_date TYPE DATE ;
 
---Task 3: Modify dim_store_details  
+--3: Modify dim_store_details  
 
 --Update webstore row where there is a NULL
 
@@ -49,7 +49,7 @@ ALTER COLUMN latitude TYPE FLOAT USING latitude::DOUBLE PRECISION,
 ALTER COLUMN country_code TYPE VARCHAR(2),  
 ALTER COLUMN continent TYPE VARCHAR(255);   
 
---Task 4: Make changes to the dim_products for delivery team
+--4: Make changes to the dim_products for delivery team
 
 --Remove £ sign from product_price
 
@@ -69,7 +69,7 @@ SET weight_class =
 		WHEN weight >= 140 THEN '=> 140'
 	END
 
---Task 5: Update the dim_products with the required data types
+--5: Update the dim_products with the required data types
 
 ALTER TABLE dim_products
 	RENAME COLUMN removed TO still_available;
@@ -84,7 +84,7 @@ ALTER COLUMN uuid TYPE UUID USING uuid::UUID,
 ALTER COLUMN still_available TYPE BOOL USING (still_available='still_available'),
 ALTER COLUMN product_code TYPE VARCHAR(11);
 
---Task 6: Update dim_date_times table
+--6: Update dim_date_times table
 
 ALTER TABLE dim_date_times
 ALTER COLUMN month TYPE VARCHAR(2),
@@ -93,14 +93,14 @@ ALTER COLUMN day TYPE VARCHAR(2),
 ALTER COLUMN time_period TYPE VARCHAR(10),
 ALTER COLUMN date_uuid TYPE UUID USING date_uuid::UUID
 
---Task 7: Update dim_card_details
+--7: Update dim_card_details
 
 ALTER TABLE dim_card_details
 ALTER COLUMN card_number TYPE VARCHAR(19),
 ALTER COLUMN expiry_date TYPE VARCHAR(19),
 ALTER COLUMN date_payment_confirmed TYPE DATE
 
---Task 8: Set a PRIMARY KEY in the dimension tables
+--8: Set a PRIMARY KEY in the dimension tables
 
 ALTER TABLE dim_card_details 
 ADD PRIMARY KEY (card_number);
@@ -113,7 +113,7 @@ ADD PRIMARY KEY (store_code);
 ALTER TABLE dim_users
 ADD PRIMARY KEY (user_uuid);
 
---Task 9: Finalise the star-based schema and add foreign keys to the orders table
+--9: Finalise the star-based schema and add foreign keys to the orders table
 
 ALTER TABLE orders_table ADD CONSTRAINT fk_dim_date_times FOREIGN KEY (date_uuid) REFERENCES dim_date_times (date_uuid);
 ALTER TABLE orders_table ADD CONSTRAINT fk_product_code FOREIGN KEY (product_code) REFERENCES dim_products (product_code);

@@ -9,13 +9,12 @@ class DatabaseConnector:
     def read_db_creds(self, creds_filepath):
         with open(creds_filepath) as f:
             creds = yaml.load(f, Loader=SafeLoader)
-            format_creds = (f"postgresql://{creds['RDS_USER']}:{creds['RDS_PASSWORD']}"
-            f"@{creds['RDS_HOST']}:{creds['RDS_PORT']}/{creds['RDS_DATABASE']}")
+            format_creds = (f"postgresql://{creds['USER']}:{creds['PASSWORD']}"
+            f"@{creds['HOST']}:{creds['PORT']}/{creds['DATABASE']}")
             return format_creds
 
     def init_db_engine(self, format_creds):
         engine = create_engine(format_creds)
-        print(engine.connect())
         return engine.connect()
     
     def upload_to_db(self, df, table_name, my_db_creds='creds/my_db_creds.yaml'):

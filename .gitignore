@@ -1,6 +1,7 @@
 experiments/
 output_data/
 creds/
+output_data/
 __pycache__/
 *.csv
 *.ipynb

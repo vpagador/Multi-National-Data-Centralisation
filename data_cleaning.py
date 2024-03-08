@@ -1,5 +1,5 @@
-from python_scripts.data_extraction import DataExtractor
-from python_scripts.database_utils import DatabaseConnector
+from data_extraction import DataExtractor
+from database_utils import DatabaseConnector
 import pandas as pd
 import re
 
@@ -18,9 +18,7 @@ class DataCleaning:
         # Fix date formatting
         date_cols = ['date_of_birth','join_date']
         for date_col in date_cols:
-            users_df.loc[:,date_col] = users_df.loc[:,date_col].apply(pd.to_datetime, 
-                                            infer_datetime_format=True, 
-                                            errors='coerce')
+            users_df.loc[:,date_col] = users_df.loc[:,date_col].apply(pd.to_datetime, errors='coerce')
         # Remove escape characters
         users_df.loc[:,'address'] = users_df.loc[:,'address'].apply(lambda x:x.replace('\n', ','))
         return users_df
@@ -45,9 +43,7 @@ class DataCleaning:
         credit_card_df.loc[:,'expiry_date'] = \
         credit_card_df.loc[:,'expiry_date'].apply(pd.to_datetime, format='%m/%y')
         credit_card_df.loc[:,'date_payment_confirmed'] = \
-        credit_card_df.loc[:,'date_payment_confirmed'].apply(pd.to_datetime,
-                                                                infer_datetime_format=True,
-                                                                errors='coerce')
+        credit_card_df.loc[:,'date_payment_confirmed'].apply(pd.to_datetime,errors='coerce')
         return credit_card_df
 
     def clean_store_data(self,stores_df):
@@ -63,51 +59,54 @@ class DataCleaning:
         stores_df.loc[:,'staff_numbers'] = stores_df['staff_numbers'].astype('str').apply(lambda x : re.sub('\D','',x))
         # Fix date formatting
         stores_df[['opening_date']] = \
-        stores_df[['opening_date']].apply(pd.to_datetime,
-                                            infer_datetime_format=True,
-                                            errors='coerce')
+        stores_df[['opening_date']].apply(pd.to_datetime,errors='coerce')
         # Fix continent misspellings
         stores_df[['continent']] = stores_df[['continent']] \
                                     .apply(lambda x:x.replace('eeEurope','Europe')) \
                                     .apply(lambda x:x.replace('eeAmerica','America'))
         return  stores_df
+
+    # ensure correct format e.g. '0.77g .'
+    def correct_format(self,value):
+        if value[-1].isalnum() is False:
+            wrong_char = value[-1]
+            value= value.replace(wrong_char,'').strip()
+        return value
     
+    # convert oz
+    def convert_oz(self,value):
+        if 'oz' in value:
+            value = value.replace('oz','')
+            value = float(value) * 28.3495
+        return value
+    
+    # convert grams to kg
+    def convert_grams(aelf,value):
+        if value[-1] == 'g' and value[-2].isdigit() and value[:-2].isdigit()or value[-2:] == 'ml':
+            value = value.replace('g','').replace('ml','')
+            value = int(value) /1000
+        return value
+    
+    # multiply values if contains 'num x num'
+    def multiply_weight_values(self,value):
+        if 'x' in value:
+            value = value.replace(' x ',' ')
+            num1, num2 = value.split(' ')[0], value.split(' ')[1]
+            new_value = int(num1)*int(num2) / 1000
+            return new_value
+        else:
+            return value
+    
+
     def convert_product_weights(self, products_df):
-        # ensure correct format e.g. '0.77g .'
-        def correct_format(value):
-            if value[-1].isalnum() is False:
-                wrong_char = value[-1]
-                value= value.replace(wrong_char,'').strip()
-            return value
-        products_df.loc[:,'weight'] =products_df.loc[:,'weight'].astype('str').apply(lambda x:correct_format(x))
-        # convert oz
-        def convert_oz(value):
-            if 'oz' in value:
-                value = value.replace('oz','')
-                value = float(value) * 28.3495
-            return value
-        products_df.loc[:,'weight'] = products_df.loc[:,'weight'].astype('str').apply(lambda x:convert_oz(x))
-        # convert grams to kg
-        def convert_grams(value):
-            if value[-1] == 'g' and value[-2].isdigit() and value[:-2].isdigit()or value[-2:] == 'ml':
-                value = value.replace('g','').replace('ml','')
-                value = int(value) /1000
-            return value
-        products_df.loc[:,'weight'] = products_df.loc[:,'weight'].astype('str').apply(lambda x:convert_grams(x))
+        products_df.loc[:,'weight'] =products_df.loc[:,'weight'].astype('str').apply(lambda x:self.correct_format(x))
+        products_df.loc[:,'weight'] = products_df.loc[:,'weight'].astype('str').apply(lambda x:self.convert_oz(x))
+        products_df.loc[:,'weight'] = products_df.loc[:,'weight'].astype('str').apply(lambda x:self.convert_grams(x))
         # remove kg sign
         products_df.loc[:,'weight'] = products_df.loc[:,'weight'].astype('str').apply(lambda x:re.sub('[kg]','',x))
-        # multiply values if contains 'num x num'
-        def multiply_weight_values(value):
-            if 'x' in value:
-                value = value.replace(' x ',' ')
-                num1, num2 = value.split(' ')[0], value.split(' ')[1]
-                new_value = int(num1)*int(num2) / 1000
-                return new_value
-            else:
-                return value
-        products_df.loc[:,'weight'] = products_df.loc[:,'weight'].apply(lambda x: multiply_weight_values(x)) 
+        products_df.loc[:,'weight'] = products_df.loc[:,'weight'].apply(lambda x: self.multiply_weight_values(x)) 
         # drop non numerical values with weight is digit
-        products_df.loc[:,'weight'] = products_df[products_df.loc[:,'weight'].astype('str').apply(lambda x:x.replace('.','').isdigit())] # works
+        products_df.loc[:,'weight'] = products_df[products_df.loc[:,'weight'].astype('str').apply(lambda x:x.replace('.','').isdigit())] 
         # convert all weight values to float and round up 2.d.p
         products_df.loc[:,'weight'] = products_df.loc[:,'weight'].astype('float').apply(lambda x: round(x,2))
         return products_df
@@ -123,9 +122,7 @@ class DataCleaning:
         products_df = products_df.drop_duplicates()
         # Format dates
         products_df.loc[:,'date_added'] = (
-        products_df['date_added'].apply(pd.to_datetime, 
-                                        infer_datetime_format=True, 
-                                        errors='coerce'))
+        products_df['date_added'].apply(pd.to_datetime, errors='coerce'))
         return products_df
 
     def clean_orders_data(self,orders_df):

@@ -1,11 +1,13 @@
-from python_scripts.database_utils import DatabaseConnector
+from database_utils import DatabaseConnector
 import pandas as pd
-from sqlalchemy import text, inspect
+from sqlalchemy import inspect
 import tabula
 import requests
 import json
 import boto3
 import numpy as np
+import ssl
+
 
 class DataExtractor:
 
@@ -15,18 +17,11 @@ class DataExtractor:
         return table_list
     
     def read_rds_table(self, engine,table):
-        try:
-            query = f"SELECT * from {table};"
-            with engine as con:
-                df = pd.read_sql_query(query, con=con)
-            return df
-
-        except Exception as err:
-            print(f'Failed to read data')
-            print(f'{err.__class__.__name__}: {err}')
-            return pd.DataFrame()
+        df = pd.read_sql_table(table,engine)
+        return df
 
     def retrieve_pdf_data(self,link):
+        ssl._create_default_https_context = ssl._create_stdlib_context
         credit_card_df = tabula.read_pdf(link,pages='all')
         credit_card_df = pd.concat(credit_card_df)
         return credit_card_df
